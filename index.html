@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Logística</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1 class="logo-text">Lexus</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-ship"></i> Operações</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Relatórios</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> Ajuda</a></li>
+            </ul>
+            <div class="sidebar-user-info">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Usuario+Logistica&background=3498db&color=fff" alt="Usuário">
+                    <div>
+                        <span>Operador Logístico</span>
+                        <div class="user-status">
+                            <span class="status-dot"></span> Online
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h2>Visão Geral de Desempenho</h2>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="regionFilter">Região</label>
+                    <select id="regionFilter">
+                        <option value="all">Todas as Regiões</option>
+                        <option value="north">Norte</option>
+                        <option value="south">Sul</option>
+                        <option value="east">Leste</option>
+                        <option value="west">Oeste</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="branchFilter">Filial</label>
+                    <select id="branchFilter" disabled>
+                        <option value="all">Todas as Filiais</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="costCenterFilter">Centro de Custo</label>
+                    <select id="costCenterFilter" disabled>
+                        <option value="all">Todos os Centros de Custo</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="clientFilter">Cliente</label>
+                    <select id="clientFilter" disabled>
+                        <option value="all">Todos os Clientes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cartões de KPI -->
+            <div class="kpi-cards">
+                <!-- Cartões serão preenchidos via JavaScript -->
+            </div>
+
+            <!-- Gráficos Novos -->
+            <div class="charts-dashboard">
+                <!-- Gráfico 1: Actual vs BGT/PM -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Actual vs BGT/PM por Unidade</span>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleBgtPm" />
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label" id="toggleLabel">BGT</span>
+                        </div>
+                    </div>
+                    <canvas id="barUnidadesChart"></canvas>
+                </div>
+
+                <!-- Gráfico 2: Tendência Mensal -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">Tendência Mensal (BGT x PM)</span>
+                    </div>
+                    <canvas id="barTendenciaChart"></canvas>
+                </div>
+
+                <!-- Linha dos velocímetros -->
+                <div class="gauges-row">
+                    <div class="gauge-card">
+                        <div class="gauge-title">CATERING</div>
+                        <div class="gauge-container" id="gauge-card-0"></div>
+                        <div class="gauge-comparison">
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">BGT</span>
+                                <span class="gauge-comparison-value" id="gauge-bgt-0"></span>
+                            </div>
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">PM</span>
+                                <span class="gauge-comparison-value" id="gauge-pm-0"></span>
+                            </div>
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">Real</span>
+                                <span class="gauge-comparison-value" id="gauge-real-0"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gauge-card">
+                        <div class="gauge-title">FRACIONADO</div>
+                        <div class="gauge-container" id="gauge-card-1"></div>
+                        <div class="gauge-comparison">
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">BGT</span>
+                                <span class="gauge-comparison-value" id="gauge-bgt-1"></span>
+                            </div>
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">PM</span>
+                                <span class="gauge-comparison-value" id="gauge-pm-1"></span>
+                            </div>
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">Real</span>
+                                <span class="gauge-comparison-value" id="gauge-real-1"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gauge-card">
+                        <div class="gauge-title">DEDICADO</div>
+                        <div class="gauge-container" id="gauge-card-2"></div>
+                        <div class="gauge-comparison">
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">BGT</span>
+                                <span class="gauge-comparison-value" id="gauge-bgt-2"></span>
+                            </div>
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">PM</span>
+                                <span class="gauge-comparison-value" id="gauge-pm-2"></span>
+                            </div>
+                            <div class="gauge-comparison-item">
+                                <span class="gauge-comparison-label">Real</span>
+                                <span class="gauge-comparison-value" id="gauge-real-2"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Dados Detalhados -->
+            <div class="data-table-container">
+                <div class="table-header">
+                    <div class="chart-title">Detalhamento de KPIs</div>
+                    <div class="chart-actions">
+                        <button><i class="fas fa-download"></i> Exportar</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-sort="date">Data <i class="fas fa-sort"></i></th>
+                            <th data-sort="client">Cliente <i class="fas fa-sort"></i></th>
+                            <th data-sort="costCenter">Centro de Custo <i class="fas fa-sort"></i></th>
+                            <th data-sort="kpiType">Tipo de KPI <i class="fas fa-sort"></i></th>
+                            <th data-sort="kpiValue">Valor <i class="fas fa-sort"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Dados serão preenchidos via JavaScript -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
