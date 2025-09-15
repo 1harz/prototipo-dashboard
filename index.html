@@ -76,19 +76,6 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label for="yearFilter">Ano</label>
-                    <select id="yearFilter">
-                        <!-- Years will be populated by JavaScript -->
-                    </select>
-                </div>
-
-                <div class="filter-group month-filter-group">
-                    <label>Mês</label>
-                    <div class="month-selector" id="monthSelector">
-                        <!-- Months will be populated by JavaScript -->
-                    </div>
-                </div>
             </div>
 
             <!-- Cartões de KPI -->
@@ -120,61 +107,78 @@
                     </div>
                     <canvas id="barTendenciaChart"></canvas>
                 </div>
+            </div>
 
-                <!-- Linha dos velocímetros -->
-                <div class="gauges-row">
-                    <div class="gauge-card">
-                        <div class="gauge-title">CATERING</div>
-                        <div class="gauge-container" id="gauge-card-0"></div>
-                        <div class="gauge-comparison">
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">BGT</span>
-                                <span class="gauge-comparison-value" id="gauge-bgt-0"></span>
-                            </div>
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">PM</span>
-                                <span class="gauge-comparison-value" id="gauge-pm-0"></span>
-                            </div>
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">Real</span>
-                                <span class="gauge-comparison-value" id="gauge-real-0"></span>
-                            </div>
+            <!-- Filtros de Ano e Mês -->
+            <div class="filters-bottom">
+                <div class="filter-group">
+                    <label for="yearFilter">Ano</label>
+                    <select id="yearFilter">
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="filter-group month-filter-group">
+                    <label>Mês</label>
+                    <div class="month-selector" id="monthSelector">
+                        <!-- Months will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Linha dos velocímetros -->
+            <div class="gauges-row">
+                <div class="gauge-card">
+                    <div class="gauge-title">CATERING</div>
+                    <div class="gauge-container" id="gauge-card-0"></div>
+                    <div class="gauge-comparison">
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">BGT</span>
+                            <span class="gauge-comparison-value" id="gauge-bgt-0"></span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">PM</span>
+                            <span class="gauge-comparison-value" id="gauge-pm-0"></span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">Real</span>
+                            <span class="gauge-comparison-value" id="gauge-real-0"></span>
                         </div>
                     </div>
-                    <div class="gauge-card">
-                        <div class="gauge-title">FRACIONADO</div>
-                        <div class="gauge-container" id="gauge-card-1"></div>
-                        <div class="gauge-comparison">
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">BGT</span>
-                                <span class="gauge-comparison-value" id="gauge-bgt-1"></span>
-                            </div>
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">PM</span>
-                                <span class="gauge-comparison-value" id="gauge-pm-1"></span>
-                            </div>
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">Real</span>
-                                <span class="gauge-comparison-value" id="gauge-real-1"></span>
-                            </div>
+                </div>
+                <div class="gauge-card">
+                    <div class="gauge-title">FRACIONADO</div>
+                    <div class="gauge-container" id="gauge-card-1"></div>
+                    <div class="gauge-comparison">
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">BGT</span>
+                            <span class="gauge-comparison-value" id="gauge-bgt-1"></span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">PM</span>
+                            <span class="gauge-comparison-value" id="gauge-pm-1"></span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">Real</span>
+                            <span class="gauge-comparison-value" id="gauge-real-1"></span>
                         </div>
                     </div>
-                    <div class="gauge-card">
-                        <div class="gauge-title">DEDICADO</div>
-                        <div class="gauge-container" id="gauge-card-2"></div>
-                        <div class="gauge-comparison">
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">BGT</span>
-                                <span class="gauge-comparison-value" id="gauge-bgt-2"></span>
-                            </div>
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">PM</span>
-                                <span class="gauge-comparison-value" id="gauge-pm-2"></span>
-                            </div>
-                            <div class="gauge-comparison-item">
-                                <span class="gauge-comparison-label">Real</span>
-                                <span class="gauge-comparison-value" id="gauge-real-2"></span>
-                            </div>
+                </div>
+                <div class="gauge-card">
+                    <div class="gauge-title">DEDICADO</div>
+                    <div class="gauge-container" id="gauge-card-2"></div>
+                    <div class="gauge-comparison">
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">BGT</span>
+                            <span class="gauge-comparison-value" id="gauge-bgt-2"></span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">PM</span>
+                            <span class="gauge-comparison-value" id="gauge-pm-2"></span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">Real</span>
+                            <span class="gauge-comparison-value" id="gauge-real-2"></span>
                         </div>
                     </div>
                 </div>

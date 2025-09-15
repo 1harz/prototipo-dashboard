@@ -448,6 +448,31 @@ body {
     margin-bottom: 30px;
 }
 
+/* Estilos para os filtros de ano e mês na parte inferior */
+.filters-bottom {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    grid-column: 1 / span 2; /* Span across both columns in the grid */
+}
+
+.filters-bottom .filter-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.filters-bottom .month-filter-group {
+    flex-basis: auto; /* Allow it to size naturally */
+    flex-grow: 1;
+}
+
 /* Gráficos na primeira linha */
 .chart-card {
     background: var(--card-bg);

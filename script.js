@@ -625,7 +625,7 @@ function renderGaugeEChart(containerId, value) {
       axisLine: {
         roundCap: true,
         lineStyle: {
-          width: 10,
+          width: 20, /* Increased thickness */
           color: [
             [33 / 166, '#d43714ff'],
             [66 / 166, '#ff9696ff'],
