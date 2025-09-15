@@ -103,11 +103,13 @@ let selectedRegion = 'all';
 let selectedBranch = 'all';
 let selectedCostCenter = 'all';
 let selectedClient = 'all';
+let selectedYear = 2025; // Default to mock data year
+let selectedMonth = [9]; // Default to mock data month (September, 1-indexed)
 let metaSelecionada = 'bgt'; // 'bgt' ou 'pm' for new charts
 
 // Função para calcular o resumo dos KPIs com base nos filtros (Original Function)
 function calculateKpiSummary(filters, data) {
-    const { regionId, branchId, costCenterId, clientId } = filters;
+    const { regionId, branchId, costCenterId, clientId, year, months } = filters;
 
     const kpiSummary = {
         "RECEITA": { real: 0, bgt: 0, pm: 0 },
@@ -138,6 +140,12 @@ function calculateKpiSummary(filters, data) {
     }
     if (clientId !== 'all') {
         filteredKpiEntries = filteredKpiEntries.filter(entry => entry.clientId === clientId);
+    }
+    if (year && months && months.length > 0) {
+        filteredKpiEntries = filteredKpiEntries.filter(entry => {
+            const entryDate = new Date(entry.date);
+            return entryDate.getFullYear() === year && months.includes(entryDate.getMonth() + 1);
+        });
     }
 
     filteredKpiEntries.forEach(entry => {
@@ -251,6 +259,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
     populateFilter(regionFilter, mockData.regions, 'all', 'Todas as Regiões');
 
+    // New Year and Month Filters
+    const yearFilter = document.getElementById('yearFilter');
+    const monthSelector = document.getElementById('monthSelector');
+
+    populateYearFilter(yearFilter);
+    populateMonthSelector(monthSelector);
+
+    yearFilter.addEventListener('change', () => {
+        selectedYear = parseInt(yearFilter.value);
+        updateDashboard();
+    });
+
+    let isDragging = false;
+    let startMonth = -1;
+    let endMonth = -1;
+
+    monthSelector.addEventListener('mousedown', (event) => {
+        if (event.target.classList.contains('month-button')) {
+            isDragging = true;
+            startMonth = parseInt(event.target.dataset.month);
+            endMonth = startMonth;
+            selectedMonth = [startMonth]; // Start a new selection
+            updateMonthButtons(); // Update visual state immediately
+        }
+    });
+
+    monthSelector.addEventListener('mouseover', (event) => {
+        if (isDragging && event.target.classList.contains('month-button')) {
+            endMonth = parseInt(event.target.dataset.month);
+            selectedMonth = getMonthsInRange(startMonth, endMonth);
+            updateMonthButtons(); // Update visual state during drag
+        }
+    });
+
+    monthSelector.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            updateDashboard(); // Update dashboard with final selection
+        }
+    });
+
+    // Also handle mouseup outside the month selector in case drag ends off-element
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            updateDashboard();
+        }
+    });
+
     regionFilter.addEventListener('change', () => {
         selectedRegion = regionFilter.value;
         selectedBranch = 'all';
@@ -289,7 +346,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDashboard();
     });
 
-    initTableSorting();
     updateDashboard();
     // --- END ORIGINAL INITIALIZATION ---
 
@@ -365,105 +421,19 @@ function createKpiCards(kpiData) {
     });
 }
 
-// Inicialização da ordenação da tabela (Original)
-function initTableSorting() {
-    const table = document.querySelector('table');
-    if (!table) return;
-    const headers = table.querySelectorAll('th');
-    const tableBody = table.querySelector('tbody');
-    
-    headers.forEach((header, index) => {
-        header.addEventListener('click', () => {
-            const isAscending = header.classList.contains('asc');
-            header.classList.toggle('asc', !isAscending);
-            header.classList.toggle('desc', isAscending);
-            
-            headers.forEach(h => {
-                if (h !== header) {
-                    h.classList.remove('asc', 'desc');
-                }
-            });
-            
-            sortTable(index, isAscending);
-        });
-    });
-    
-    function sortTable(column, ascending) {
-        const rows = Array.from(tableBody.querySelectorAll('tr'));
-        
-        rows.sort((a, b) => {
-            const aValue = a.cells[column].textContent;
-            const bValue = b.cells[column].textContent;
-            
-            const aNum = parseFloat(aValue.replace(/[^\d,-]/g, '').replace(',', '.'));
-            const bNum = parseFloat(bValue.replace(/[^\d,-]/g, '').replace(',', '.'));
-            
-            if (!isNaN(aNum) && !isNaN(bNum)) {
-                return ascending ? aNum - bNum : bNum - aNum;
-            } else {
-                return ascending ? 
-                    aValue.localeCompare(bValue) : 
-                    bValue.localeCompare(aValue);
-            }
-        });
-        
-        while (tableBody.firstChild) {
-            tableBody.removeChild(tableBody.firstChild);
-        }
-        
-        tableBody.append(...rows);
-    }
-}
-
 // Atualização do dashboard com base nos filtros (Original)
 function updateDashboard() {
     const filters = {
         regionId: selectedRegion,
         branchId: selectedBranch,
         costCenterId: selectedCostCenter,
-        clientId: selectedClient
+        clientId: selectedClient,
+        year: selectedYear,
+        months: selectedMonth // Pass the array of selected months
     };
 
     const kpiData = calculateKpiSummary(filters, mockData);
     createKpiCards(kpiData);
-    updateTable(filters, mockData);
-}
-
-// Atualizar a tabela (Original)
-function updateTable(filters, data) {
-    const tableBody = document.getElementById('tableBody');
-    if (!tableBody) return;
-    tableBody.innerHTML = '';
-    
-    let entries = data.kpiEntries;
-
-    if (filters.regionId !== 'all') {
-        entries = entries.filter(entry => entry.regionId === filters.regionId);
-    }
-    if (filters.branchId !== 'all') {
-        entries = entries.filter(entry => entry.branchId === filters.branchId);
-    }
-    if (filters.costCenterId !== 'all') {
-        entries = entries.filter(entry => entry.costCenterId === filters.costCenterId);
-    }
-    if (filters.clientId !== 'all') {
-        entries = entries.filter(entry => entry.clientId === filters.clientId);
-    }
-    
-    entries.forEach(entry => {
-        const client = data.clients.find(c => c.id === entry.clientId);
-        const costCenter = data.costCenters.find(cc => cc.id === entry.costCenterId);
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${entry.date}</td>
-            <td>${client ? client.name : 'N/A'}</td>
-            <td>${costCenter ? costCenter.name : 'N/A'}</td>
-            <td>${entry.kpiType}</td>
-            <td>${entry.kpiType === 'RECEITA' ? 'R$ ' + entry.kpiValue.toLocaleString('pt-BR') : entry.kpiValue + '%'}</td>
-        `;
-        tableBody.appendChild(row);
-    });
 }
 
 
@@ -562,6 +532,70 @@ function initBarTendenciaChart() {
       }
     }
   });
+}
+
+// New function to populate year filter
+function populateYearFilter(selectElement) {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 5; // 5 years back
+    const endYear = currentYear + 1;   // 1 year forward
+
+    selectElement.innerHTML = '';
+    for (let year = startYear; year <= endYear; year++) {
+        const opt = document.createElement('option');
+        opt.value = year;
+        opt.textContent = year;
+        if (year === currentYear) {
+            opt.selected = true;
+        }
+        selectElement.appendChild(opt);
+    }
+}
+
+// New function to populate month selector
+function populateMonthSelector(containerElement) {
+    const months = [
+        { name: 'Jan', value: 1 }, { name: 'Fev', value: 2 }, { name: 'Mar', value: 3 },
+        { name: 'Abr', value: 4 }, { name: 'Mai', value: 5 }, { name: 'Jun', value: 6 },
+        { name: 'Jul', value: 7 }, { name: 'Ago', value: 8 }, { name: 'Set', value: 9 },
+        { name: 'Out', value: 10 }, { name: 'Nov', value: 11 }, { name: 'Dez', value: 12 }
+    ];
+
+    containerElement.innerHTML = '';
+    months.forEach(month => {
+        const button = document.createElement('button');
+        button.className = 'month-button';
+        button.dataset.month = month.value;
+        button.textContent = month.name;
+        if (selectedMonth.includes(month.value)) { // Check if month is in the array
+            button.classList.add('active');
+        }
+        containerElement.appendChild(button);
+    });
+}
+
+// Helper function to get months in a range
+function getMonthsInRange(start, end) {
+    const months = [];
+    const min = Math.min(start, end);
+    const max = Math.max(start, end);
+    for (let i = min; i <= max; i++) {
+        months.push(i);
+    }
+    return months;
+}
+
+// Helper function to update month button active states
+function updateMonthButtons() {
+    const monthButtons = document.querySelectorAll('.month-button');
+    monthButtons.forEach(button => {
+        const monthValue = parseInt(button.dataset.month);
+        if (selectedMonth.includes(monthValue)) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    });
 }
 
 function renderGauges() {

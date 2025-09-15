@@ -75,6 +75,20 @@
                         <option value="all">Todos os Clientes</option>
                     </select>
                 </div>
+
+                <div class="filter-group">
+                    <label for="yearFilter">Ano</label>
+                    <select id="yearFilter">
+                        <!-- Years will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="filter-group month-filter-group">
+                    <label>Mês</label>
+                    <div class="month-selector" id="monthSelector">
+                        <!-- Months will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
 
             <!-- Cartões de KPI -->
@@ -166,35 +180,6 @@
                 </div>
             </div>
 
-            <!-- Tabela de Dados Detalhados -->
-            <div class="data-table-container">
-                <div class="table-header">
-                    <div class="chart-title">Detalhamento de KPIs</div>
-                    <div class="chart-actions">
-                        <button><i class="fas fa-download"></i> Exportar</button>
-                    </div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-sort="date">Data <i class="fas fa-sort"></i></th>
-                            <th data-sort="client">Cliente <i class="fas fa-sort"></i></th>
-                            <th data-sort="costCenter">Centro de Custo <i class="fas fa-sort"></i></th>
-                            <th data-sort="kpiType">Tipo de KPI <i class="fas fa-sort"></i></th>
-                            <th data-sort="kpiValue">Valor <i class="fas fa-sort"></i></th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Dados serão preenchidos via JavaScript -->
-                    </tbody>
-                </table>
-                <div class="pagination">
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
         </main>
     </div>
 

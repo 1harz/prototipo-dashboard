@@ -205,6 +205,45 @@ body {
     box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
 }
 
+/* Month Selector Styles */
+.month-filter-group {
+    flex-basis: 100%; /* Occupy full width */
+}
+
+.month-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.month-button {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    flex-grow: 1; /* Allow buttons to grow and fill space */
+    min-width: 60px; /* Minimum width for month buttons */
+    text-align: center;
+}
+
+.month-button:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+.month-button.active {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.4);
+    transform: translateY(-2px); /* Slight lift for active state */
+}
+
 .filter-group select:disabled {
     background-color: rgba(255, 255, 255, 0.5);
     cursor: not-allowed;
@@ -399,107 +438,6 @@ body {
     height: 300px;
 }
 
-/* Table */
-.data-table-container {
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    padding: 25px;
-    margin-bottom: 30px;
-    overflow-x: auto;
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-}
-
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.table-header .chart-title {
-    font-size: 18px;
-}
-
-.table-header button {
-    background: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.table-header button:hover {
-    background: #0056b3;
-    transform: translateY(-2px);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 16px;
-    text-align: left;
-    border-bottom: 1px solid var(--glass-border);
-}
-
-th {
-    background: rgba(0, 0, 0, 0.05);
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--text-secondary);
-    font-size: 14px;
-    transition: var(--transition);
-}
-
-th:hover {
-    color: var(--text-primary);
-}
-
-tr {
-    transition: var(--transition);
-}
-
-tr:hover {
-    background: rgba(0, 0, 0, 0.02);
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 25px;
-    gap: 8px;
-}
-
-.pagination button {
-    padding: 10px 16px;
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--glass-border);
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: var(--transition);
-}
-
-.pagination button:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--text-primary);
-}
-
-.pagination button.active {
-    background-color: var(--accent-color);
-    color: white;
-    border-color: var(--accent-color);
-}
 
 /* Novo layout para gráficos e gauges */
 .charts-dashboard {
@@ -705,6 +643,40 @@ input:checked + .toggle-slider:before {
     
     .gauge-container {
         height: 150px;
+    }
+}
+
+@media (min-width: 1920px) {
+    .gauges-row {
+        grid-template-columns: repeat(3, 1fr); /* Ensure 3 columns on large screens */
+        gap: 30px;
+    }
+
+    .gauge-card {
+        padding: 30px;
+        min-height: 450px; /* Increased height for desktop */
+    }
+
+    .gauge-title {
+        font-size: 22px; /* Larger title for desktop */
+        margin-bottom: 20px;
+    }
+
+    .gauge-container {
+        height: 300px; /* Larger gauge container for desktop */
+    }
+
+    .gauge-comparison {
+        gap: 30px;
+        margin-top: 20px;
+    }
+
+    .gauge-comparison-label {
+        font-size: 14px;
+    }
+
+    .gauge-comparison-value {
+        font-size: 16px;
     }
 }
 
