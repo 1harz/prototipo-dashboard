@@ -670,5 +670,3 @@ function renderGaugeEChart(containerId, value) {
   };
   myChart.setOption(option, true);
 }
-
-// --- END NEW CHART FUNCTIONS ---
