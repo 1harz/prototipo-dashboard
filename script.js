@@ -81,17 +81,17 @@ const tendenciaMensalData = [
 const gaugesData = [
   {
     titulo: 'CATERING',
-    valores: { bgt: 118, pm: 126, real: 147 },
+    valores: { bgt: 118, pm: 126, real: 36 },
     unidadesDisponiveis: ['REC', 'SSA', 'FOR', 'TODAS']
   },
   {
     titulo: 'FRACIONADO',
-    valores: { bgt: 200, pm: 210, real: 205 },
+    valores: { bgt: 200, pm: 210, real: 100 },
     unidadesDisponiveis: ['RMSP', 'RMRJ', 'CWBI', 'TODAS']
   },
   {
     titulo: 'DEDICADO',
-    valores: { bgt: 300, pm: 320, real: 310 },
+    valores: { bgt: 300, pm: 320, real: 150 },
     unidadesDisponiveis: ['REC', 'SSA', 'FOR', 'TODAS']
   }
 ];
@@ -584,6 +584,7 @@ function renderGaugeEChart(containerId, value) {
   const option = {
     series: [{
       type: 'gauge',
+      max: 166,
       startAngle: 180,
       endAngle: 0,
       progress: { show: false, width: 10 },
@@ -592,9 +593,11 @@ function renderGaugeEChart(containerId, value) {
         lineStyle: {
           width: 10,
           color: [
-            [0.40, '#ca583f'],
-            [0.60, '#FDDD60'],
-            [1, '#58D9F9'],
+            [33 / 166, '#d43714ff'],
+            [66 / 166, '#ff9696ff'],
+            [100 / 166, '#eeff00ff'],
+            [133 / 166, '#7aff6eff'],
+            [1, '#15ff00ff']
           ]
         }
       },
@@ -616,7 +619,18 @@ function renderGaugeEChart(containerId, value) {
         size: 10,
         itemStyle: { borderWidth: 3 }
       },
-      detail: { show: false },
+      detail: {
+        show: true,
+        offsetCenter: [0, '80%'],
+        formatter: function (value) {
+          return value.toFixed(1) + '%';
+        },
+        textStyle: {
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: '#333'
+        }
+      },
       data: [{ value }]
     }]
   };
