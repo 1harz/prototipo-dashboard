@@ -28,3 +28,7 @@ Para visualizar o dashboard, basta abrir o arquivo `index.html` em qualquer nave
 1.  Clone o repositório (se aplicável) ou baixe os arquivos.
 2.  Navegue até a pasta do projeto.
 3.  Abra o arquivo `index.html` no seu navegador preferido.
+
+## Sobre
+
+Esse protótipo faz parte de um sistema que estou desenvolvendo em meu estágio nas empresas MH Gestão Empresarial e Braslog.
