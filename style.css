@@ -38,6 +38,30 @@ body {
     min-height: 100vh;
 }
 
+.sidebar {
+    width: var(--sidebar-width);
+    transition: width 0.3s, transform 0.3s, opacity 0.3s;
+    flex-shrink: 0;
+}
+
+.sidebar.hidden {
+    width: 0 !important;
+    min-width: 0 !important;
+    opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none;
+}
+
+.main-content {
+    flex: 1;
+    transition: margin-left 0.3s, width 0.3s;
+}
+
+.main-content.expanded {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
 /* Sidebar Modernizada */
 .sidebar {
     display: flex;
@@ -55,6 +79,7 @@ body {
     border-right: 1px solid var(--glass-border);
     z-index: 100;
     flex-shrink: 0;
+    transition: transform 0.3s, opacity 0.3s;
 }
 
 .logo {
@@ -117,8 +142,14 @@ body {
 .main-content {
     flex: 1;
     padding: 30px;
-    overflow-y: auto;
+    
     margin-left: 0;
+}
+
+.main-content.expanded {
+    margin-left: 0 !important;
+    width: 100vw;
+    transition: width 0.3s, margin-left 0.3s;
 }
 
 /* Header */
@@ -387,13 +418,6 @@ body {
 }
 
 /* Charts */
-.charts-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-    gap: 25px;
-    margin-bottom: 30px;
-}
-
 .chart-card {
     background: var(--card-bg);
     border-radius: var(--border-radius);
@@ -401,6 +425,7 @@ body {
     padding: 25px;
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
+    /* Removido: margin-bottom: 25px; */
 }
 
 .chart-header {
@@ -435,65 +460,66 @@ body {
 
 .chart-container {
     position: relative;
-    height: 300px;
+    height: 300px; /* Altura padrão para os containers de gráfico */
 }
 
-
-/* Novo layout para gráficos e gauges */
-.charts-dashboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+/* Novo Layout de Gráficos e Velocímetros */
+.dashboard-content-grid {
+    display: flex;
     gap: 25px;
     margin-bottom: 30px;
+    align-items: flex-start; /* Alinha o topo das colunas */
 }
 
-/* Estilos para os filtros de ano e mês na parte inferior */
-.filters-bottom {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    margin-bottom: 25px;
+.grid-column-left {
+    flex: 1; /* Coluna da esquerda é maior */
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-    grid-column: 1 / span 2; /* Span across both columns in the grid */
+    flex-direction: column;
+    gap: 15px; /* Espaço entre os elementos da coluna */
 }
 
-.filters-bottom .filter-group {
-    flex: 1;
-    min-width: 150px;
+.grid-column-right {
+    flex: 1; /* Coluna da direita */
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* Espaço entre os elementos da coluna */
 }
 
-.filters-bottom .month-filter-group {
-    flex-basis: auto; /* Allow it to size naturally */
-    flex-grow: 1;
+/* Estilos específicos para os cards dentro do novo layout */
+#unidades-chart-card {
+    height: auto; /* Deixa a altura ser definida pelo conteúdo */
+    min-height: 400px; /* Altura mínima para o gráfico de unidades */
 }
 
-/* Gráficos na primeira linha */
-.chart-card {
-    background: var(--card-bg);
+#tendencia-chart-card {
+    display: flex; /* Adiciona flexbox para controle de layout */
+    flex-direction: column; /* Organiza os itens em coluna */
+    height: auto; /* Deixa a altura ser definida pelo conteúdo */
+    min-height: 720px; /* Altura mínima para o gráfico de tendência */
+}
+
+/* Reposicionamento dos filtros de tendência */
+#tendencia-filters {
+    margin-top: 0; /* Remove o margin-top anterior */
+    padding: 15px;
+    background: var(--card-bg); /* Adiciona background para o seletor de ano */
     border-radius: var(--border-radius);
     box-shadow: var(--card-shadow);
-    padding: 25px;
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(10px);
-    grid-row: 1;
 }
 
-/* Linha dos gauges */
+/* Ajuste do canvas dentro do card de tendência */
+#tendencia-chart-card .chart-container {
+    flex-grow: 1; /* Faz o container do gráfico crescer para preencher o espaço */
+    height: 300px; /* Mantém a altura padrão para o canvas, mas o flex-grow fará o container se expandir */
+    margin-bottom: 0; /* Remove o margin-bottom anterior */
+}
+
+/* Linha dos velocímetros */
 .gauges-row {
-    grid-column: 1 / span 2;
-    grid-row: 2;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    margin-top: 10px;
+    margin-top: 0; /* Remove o margin-top negativo */
 }
-
 /* Estilo individual para cada gauge */
 .gauge-card {
     background: var(--card-bg);
@@ -507,7 +533,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    min-height: 350px;
+    min-height: 280px;
 }
 
 .gauge-title {
@@ -519,7 +545,7 @@ body {
 
 .gauge-container {
     width: 100%;
-    height: 250px;
+    height: 180px;
     position: relative;
     margin: 10px 0;
 }
@@ -602,17 +628,20 @@ input:checked + .toggle-slider:before {
 
 /* Responsividade */
 @media (max-width: 1200px) {
-    .charts-dashboard {
-        grid-template-columns: 1fr;
+    .dashboard-content-grid {
+        flex-direction: column; /* Empilha as colunas em telas menores */
     }
+
+    .grid-column-left,
+    .grid-column-right {
+        flex: 1 1 100%; /* Ocupa a largura total */
+    }
+
     .gauges-row {
-        grid-column: 1;
-        grid-template-columns: 1fr;
-    }
-    .chart-card {
-        grid-column: 1;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ajusta os gauges para 2 ou 1 coluna */
     }
 }
+
 @media (max-width: 1024px) {
     .dashboard-container {
         flex-direction: column;
@@ -658,10 +687,6 @@ input:checked + .toggle-slider:before {
         padding: 15px;
     }
     
-    .charts-container {
-        gap: 15px;
-    }
-    
     .gauge-card {
         padding: 15px;
     }
@@ -669,26 +694,30 @@ input:checked + .toggle-slider:before {
     .gauge-container {
         height: 150px;
     }
+
+    .gauges-row {
+        grid-template-columns: 1fr; /* Um gauge por linha em telas muito pequenas */
+    }
 }
 
 @media (min-width: 1920px) {
     .gauges-row {
-        grid-template-columns: repeat(3, 1fr); /* Ensure 3 columns on large screens */
+        grid-template-columns: repeat(3, 1fr); /* Garante 3 colunas em telas grandes */
         gap: 30px;
     }
 
     .gauge-card {
         padding: 30px;
-        min-height: 450px; /* Increased height for desktop */
+        min-height: 450px; /* Altura aumentada para desktop */
     }
 
     .gauge-title {
-        font-size: 22px; /* Larger title for desktop */
+        font-size: 22px; /* Título maior para desktop */
         margin-bottom: 20px;
     }
 
     .gauge-container {
-        height: 300px; /* Larger gauge container for desktop */
+        height: 300px; /* Container do gauge maior para desktop */
     }
 
     .gauge-comparison {
@@ -793,4 +822,174 @@ input:checked + .toggle-slider:before {
     display: inline-block;
     margin-right: 6px;
     box-shadow: 0 0 6px 1px var(--success-color);
+}
+
+.sidebar-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 1.8rem;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-restore-btn {
+    position: fixed;
+    top: 30px;
+    left: 10px;
+    z-index: 101;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.sidebar-restore-btn:hover {
+    background: #0056b3;
+}
+
+/* Estilos para múltiplos gauges */
+.multi-gauge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    min-height: 300px;
+    padding: 30px 20px;
+    width: 100%;
+}
+
+.multi-gauge-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.multi-gauge-header .gauge-title {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.multi-gauge-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: -30px;
+    margin-bottom: -5px;
+    
+}
+
+.multi-gauge-container .gauge-container {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 100%;
+    height: 110px;
+}
+
+.multi-gauge-comparison {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.multi-gauge-comparison .gauge-comparison {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* New Gauge Styles */
+.wrapper {
+   display: table;
+   margin: 0 auto;
+   padding: 0;
+   transform: scale(1.0); /* Adjusted scale for better fit */
+}
+
+.gauge {
+  font-family: Arial, Helvetica, sans-serif;
+  background: conic-gradient(
+    from -90deg at 50% 100%,
+    #d43714 0deg 35.66deg,
+    #ff9696 35.66deg 71.32deg,
+    #eeff00 71.32deg 108.43deg,
+    #7aff6e 108.43deg 143.97deg,
+    #15ff00 143.97deg 180deg
+  );
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .09), 0 0 35px 5px rgba(255, 255, 255, .29);
+  width: 200px;
+  height: 100px;
+  border-radius: 100px 100px 0 0;
+  position: relative;
+  overflow: hidden;
+  -webkit-transform-style: flat;
+  transform-style: flat;
+  -webkit-transform: translateZ(0px);
+  transform: translateZ(0px);
+}
+
+.gauge-center {
+  color: #fff;
+  width: 60%;
+  height: 60%;
+  background: #15222E;
+  border-radius: 100px 100px 0 0;
+  position: absolute;
+  box-shadow: 0 -13px 15px -10px rgba(0, 0, 0, .28);
+  right: 21%;
+  bottom: 0;
+}
+
+.gauge-center #counter-0,
+.gauge-center #counter-1,
+.gauge-center #counter-2 {
+    color: #fff;
+    font-size: 1.5em;
+    width: 100%;
+    padding: 20px 0 0 0;
+    text-align: center;
+    float: left;
+    -webkit-font-smoothing: antialiased;
+}
+
+.needle {
+  width: 78px;
+  height: 7px;
+  background: #15222E;
+  border-bottom-left-radius: 100%;
+  border-bottom-right-radius: 5px;
+  border-top-left-radius: 100%;
+  border-top-right-radius: 5px;
+  position: absolute;
+  bottom: 4px;
+  left: 20px;
+  transform-origin: 100% 4px;
+  box-shadow: 0 2px 2px 1px rgba(0, 0, 0, .38);
+  transition: transform 0.8s;
+  transition-timing-function: cubic-bezier(.65, 1.95, .03, .32);
+}
+
+.slice-colors {
+    display: none; /* Hide the slice-colors div as it's no longer used for rendering */
 }

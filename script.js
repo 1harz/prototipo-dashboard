@@ -251,6 +251,26 @@ function calculateKpiSummary(filters, data) {
 
 // DOMContentLoaded - Main Initialization
 document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggleBtn = document.getElementById('sidebarToggle');
+    const mainContent = document.querySelector('.main-content');
+    const icon = sidebarToggleBtn.querySelector('i');
+
+    sidebarToggleBtn.addEventListener('click', function() {
+        const isHidden = sidebar.classList.contains('hidden');
+        if (isHidden) {
+            sidebar.classList.remove('hidden');
+            mainContent.classList.remove('expanded');
+            icon.classList.remove('fa-compress');
+            icon.classList.add('fa-expand');
+        } else {
+            sidebar.classList.add('hidden');
+            mainContent.classList.add('expanded');
+            icon.classList.remove('fa-expand');
+            icon.classList.add('fa-compress');
+        }
+    });
+
     // --- ORIGINAL INITIALIZATION ---
     const regionFilter = document.getElementById('regionFilter');
     const branchFilter = document.getElementById('branchFilter');
@@ -363,6 +383,17 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGauges();
     });
     // --- END NEW CHART INITIALIZATION ---
+
+    // Mover os filtros para dentro do card de tendência
+    const tendenciaCard = document.getElementById('tendencia-chart-card');
+    const filtersBottom = document.getElementById('tendencia-filters');
+    
+    if (tendenciaCard && filtersBottom) {
+        tendenciaCard.appendChild(filtersBottom);
+    }
+
+    // Sidebar hide/show logic
+    // The sidebarRestoreBtn element does not exist in index.html, so this code is removed.
 });
 
 // Helper function to populate select dropdowns (Original)
@@ -446,6 +477,15 @@ function initBarUnidadesChart() {
     data: getBarUnidadesChartData(),
     options: {
       responsive: true,
+      maintainAspectRatio: false, // Allow chart to take full height of container
+      layout: {
+        padding: {
+          left: 10,
+          right: 10,
+          top: 40, // Increased top padding to make space for the percentage boxes
+          bottom: 10
+        }
+      },
       plugins: {
         legend: { display: true },
         tooltip: {
@@ -454,11 +494,28 @@ function initBarUnidadesChart() {
               return `${context.dataset.label}: ${context.parsed.y}`;
             }
           }
-        }
+        },
+        percentageDifference: {} // Enable the plugin
       },
       scales: {
-        x: { stacked: false },
-        y: { beginAtZero: true }
+        x: {
+          stacked: false,
+          grid: {
+            display: false // Hide x-axis grid lines for cleaner look
+          },
+          ticks: {
+            autoSkip: false, // Prevent labels from being skipped
+            maxRotation: 0,
+            minRotation: 0,
+            padding: 10 // Add padding to x-axis labels
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: '#e0e0e0' // Light grid lines for y-axis
+          }
+        }
       }
     }
   });
@@ -479,7 +536,7 @@ function getBarUnidadesChartData() {
       {
         label: metaSelecionada.toUpperCase(),
         data: metaData,
-        backgroundColor: metaSelecionada === 'bgt' ? '#3498db' : '#f39c12'
+        backgroundColor: '#3498db'
       },
       {
         label: 'Real',
@@ -491,8 +548,110 @@ function getBarUnidadesChartData() {
 }
 function updateBarUnidadesChart() {
   barUnidadesChart.data = getBarUnidadesChartData();
-  barUnidadesChart.update();
+    barUnidadesChart.update();
 }
+
+// Chart.js Plugin for Percentage Difference
+const percentageDifferencePlugin = {
+    id: 'percentageDifference',
+    afterDraw(chart, args, options) {
+        const { ctx, chartArea: { left, right, top, bottom, width, height }, scales: { x, y } } = chart;
+
+        ctx.save();
+        ctx.font = 'bold 12px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const dataset1 = chart.data.datasets[0]; // BGT or PM
+        const dataset2 = chart.data.datasets[1]; // Real
+
+        if (!dataset1 || !dataset2) return;
+
+        for (let i = 0; i < dataset1.data.length; i++) {
+            const value1 = dataset1.data[i];
+            const value2 = dataset2.data[i];
+            const label = chart.data.labels[i];
+
+            // Only draw for actual units, not 'Total'
+            if (label === 'Total') continue;
+
+            const meta1 = chart.getDatasetMeta(0).data[i];
+            const meta2 = chart.getDatasetMeta(1).data[i];
+
+            if (!meta1 || !meta2) continue;
+
+            const x1 = meta1.x;
+            const y1 = meta1.y;
+            const x2 = meta2.x;
+            const y2 = meta2.y;
+
+            // Calculate percentage difference
+            let percentageDiff = 0;
+            if (value1 !== 0) {
+                percentageDiff = ((value2 - value1) / value1) * 100;
+            } else if (value2 !== 0) {
+                percentageDiff = 100; // If BGT/PM is 0 and Real is not, it's a 100% increase
+            }
+            const displayValue = `${percentageDiff >= 0 ? '+' : ''}${percentageDiff.toFixed(1)}%`;
+            const textColor = percentageDiff >= 0 ? '#2ecc71' : '#e74c3c'; // Green for positive, red for negative
+
+            // Position for the percentage box
+            const boxWidth = 60;
+            const boxHeight = 25;
+            const boxX = (x1 + x2) / 2 - (boxWidth / 2);
+            const boxY = Math.min(y1, y2) - 30; // Above the higher bar
+
+            // Draw box
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 1;
+            ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+            ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+            // Draw percentage text
+            ctx.fillStyle = textColor;
+            ctx.fillText(displayValue, (x1 + x2) / 2, boxY + (boxHeight / 2));
+
+            // Draw arrows
+            ctx.strokeStyle = textColor;
+            ctx.lineWidth = 1.5;
+
+            // Arrow from bar 1 to box
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(boxX + boxWidth / 2, boxY + boxHeight);
+            ctx.stroke();
+            // Arrowhead 1
+            drawArrowhead(ctx, x1, y1, boxX + boxWidth / 2, boxY + boxHeight, textColor);
+
+            // Arrow from bar 2 to box
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(boxX + boxWidth / 2, boxY + boxHeight);
+            ctx.stroke();
+            // Arrowhead 2
+            drawArrowhead(ctx, x2, y2, boxX + boxWidth / 2, boxY + boxHeight, textColor);
+        }
+        ctx.restore();
+    }
+};
+
+// Helper function to draw arrowheads
+function drawArrowhead(ctx, fromX, fromY, toX, toY, color) {
+    const headlen = 8; // length of arrowhead in pixels
+    const angle = Math.atan2(toY - fromY, toX - fromX);
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+}
+
+// Register the plugin
+Chart.register(percentageDifferencePlugin);
 
 let barTendenciaChart;
 function initBarTendenciaChart() {
@@ -600,73 +759,23 @@ function updateMonthButtons() {
 
 function renderGauges() {
   gaugesData.forEach((gauge, idx) => {
-    // Render ECharts gauge
-    setTimeout(() => {
-      renderGaugeEChart(`gauge-card-${idx}`, gauge.valores.real);
-      // Preenche os valores nos campos de comparação
-      document.getElementById(`gauge-bgt-${idx}`).textContent = gauge.valores.bgt;
-      document.getElementById(`gauge-pm-${idx}`).textContent = gauge.valores.pm;
-      document.getElementById(`gauge-real-${idx}`).textContent = gauge.valores.real;
-    }, 0);
+    renderNewGauge(idx, gauge.valores.real);
+    document.getElementById(`gauge-bgt-${idx}`).textContent = gauge.valores.bgt;
+    document.getElementById(`gauge-pm-${idx}`).textContent = gauge.valores.pm;
+    document.getElementById(`gauge-real-${idx}`).textContent = gauge.valores.real;
   });
 }
 
-function renderGaugeEChart(containerId, value) {
-  const dom = document.getElementById(containerId);
-  if (!dom) return;
-  const myChart = echarts.init(dom);
-  const option = {
-    series: [{
-      type: 'gauge',
-      max: 166,
-      startAngle: 180,
-      endAngle: 0,
-      progress: { show: false, width: 10 },
-      axisLine: {
-        roundCap: true,
-        lineStyle: {
-          width: 20, /* Increased thickness */
-          color: [
-            [33 / 166, '#d43714ff'],
-            [66 / 166, '#ff9696ff'],
-            [100 / 166, '#eeff00ff'],
-            [133 / 166, '#7aff6eff'],
-            [1, '#15ff00ff']
-          ]
-        }
-      },
-      axisTick: { show: false },
-      splitLine: {
-        length: 15,
-        lineStyle: { width: 0, color: '#999' }
-      },
-      axisLabel: { show: false },
-      pointer: {
-        icon: 'path://M2090.36389,615.30999 L2090.36389,615.30999 C2091.48372,615.30999 2092.40383,616.194028 2092.44859,617.312956 L2096.90698,728.755929 C2097.05155,732.369577 2094.2393,735.416212 2090.62566,735.56078 C2090.53845,735.564269 2090.45117,735.566014 2090.36389,735.566014 L2090.36389,735.566014 C2086.74736,735.566014 2083.81557,732.63423 2083.81557,729.017692 C2083.81557,728.930412 2083.81732,728.84314 2083.82081,728.755929 L2088.2792,617.312956 C2088.32396,616.194028 2089.24407,615.30999 2090.36389,615.30999 Z',
-        length: '85%',
-        width: 6,
-        offsetCenter: [0, '0']
-      },
-      anchor: {
-        show: true,
-        showAbove: true,
-        size: 10,
-        itemStyle: { borderWidth: 3 }
-      },
-      detail: {
-        show: true,
-        offsetCenter: [0, '80%'],
-        formatter: function (value) {
-          return value.toFixed(1) + '%';
-        },
-        textStyle: {
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: '#333'
-        }
-      },
-      data: [{ value }]
-    }]
-  };
-  myChart.setOption(option, true);
+function renderNewGauge(index, value) {
+  const gaugeContainer = $(`#gauge-card-${index}`);
+  // The slice-colors div is now handled by CSS conic-gradient, so no need to manipulate slices here.
+
+  // The value range is 0-166, which maps to a 0-180 degree rotation.
+  const rotation = (value / 166) * 180;
+  
+  // Ensure rotation doesn't exceed 180 degrees
+  const finalRotation = Math.min(rotation, 180);
+
+  gaugeContainer.find(`#arrow-${index}`).css('transform', `rotate(${finalRotation}deg)`);
+  gaugeContainer.find(`#counter-${index}`).text(value.toFixed(0));
 }

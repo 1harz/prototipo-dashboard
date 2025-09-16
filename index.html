@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -35,11 +36,15 @@
                 </div>
             </div>
         </aside>
+        
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="header">
-                <h2>Visão Geral de Desempenho</h2>
+                <h2>Análise de Desempenho</h2>
+                <button id="sidebarToggle" class="sidebar-toggle-btn" title="Minimizar Sidebar">
+                    <i class="fas fa-expand"></i>
+                </button>
             </div>
 
             <!-- Filtros -->
@@ -83,107 +88,137 @@
                 <!-- Cartões serão preenchidos via JavaScript -->
             </div>
 
-            <!-- Gráficos Novos -->
-            <div class="charts-dashboard">
-                <!-- Gráfico 1: Actual vs BGT/PM -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <span class="chart-title">Actual vs BGT/PM por Unidade</span>
-                        <div class="toggle-container">
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="toggleBgtPm" />
-                                <span class="toggle-slider"></span>
-                            </label>
-                            <span class="toggle-label" id="toggleLabel">BGT</span>
+            <!-- Novo Layout de Gráficos e Velocímetros -->
+            <div class="dashboard-content-grid">
+                <div class="grid-column-left">
+                    <!-- Gráfico 1: Actual vs BGT/PM -->
+                    <div class="chart-card" id="unidades-chart-card">
+                        <div class="chart-header">
+                            <span class="chart-title">Actual vs BGT/PM por Unidade</span>
+                            <div class="toggle-container">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggleBgtPm" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label" id="toggleLabel">BGT</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="barUnidadesChart"></canvas>
                         </div>
                     </div>
-                    <canvas id="barUnidadesChart"></canvas>
+
+                    <!-- Linha dos velocímetros -->
+                    <div class="gauges-row">
+                        <div class="gauge-card multi-gauge-card">
+                            <div class="multi-gauge-header">
+                                <span class="gauge-title">CATERING</span>
+                                <span class="gauge-title">FRACIONADO</span>
+                                <span class="gauge-title">DEDICADO</span>
+                            </div>
+                            <div class="multi-gauge-container">
+                                <div class="gauge-container" id="gauge-card-0">
+                                    <div class="wrapper">
+                                      <div class="gauge">
+                                        <div id="arrow-0" class="needle"></div>
+                                        <div class="gauge-center"><div id="counter-0">0</div></div>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="gauge-container" id="gauge-card-1">
+                                    <div class="wrapper">
+                                      <div class="gauge">
+                                        <div id="arrow-1" class="needle"></div>
+                                        <div class="gauge-center"><div id="counter-1">0</div></div>
+                                      </div>
+                                    </div>
+                                </div>
+                                <div class="gauge-container" id="gauge-card-2">
+                                    <div class="wrapper">
+                                      <div class="gauge">
+                                        <div id="arrow-2" class="needle"></div>
+                                        <div class="gauge-center"><div id="counter-2">0</div></div>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="multi-gauge-comparison">
+                                <div class="gauge-comparison">
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">BGT</span>
+                                        <span class="gauge-comparison-value" id="gauge-bgt-0"></span>
+                                    </div>
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">PM</span>
+                                        <span class="gauge-comparison-value" id="gauge-pm-0"></span>
+                                    </div>
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">Real</span>
+                                        <span class="gauge-comparison-value" id="gauge-real-0"></span>
+                                    </div>
+                                </div>
+                                <div class="gauge-comparison">
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">BGT</span>
+                                        <span class="gauge-comparison-value" id="gauge-bgt-1"></span>
+                                    </div>
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">PM</span>
+                                        <span class="gauge-comparison-value" id="gauge-pm-1"></span>
+                                    </div>
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">Real</span>
+                                        <span class="gauge-comparison-value" id="gauge-real-1"></span>
+                                    </div>
+                                </div>
+                                <div class="gauge-comparison">
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">BGT</span>
+                                        <span class="gauge-comparison-value" id="gauge-bgt-2"></span>
+                                    </div>
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">PM</span>
+                                        <span class="gauge-comparison-value" id="gauge-pm-2"></span>
+                                    </div>
+                                    <div class="gauge-comparison-item">
+                                        <span class="gauge-comparison-label">Real</span>
+                                        <span class="gauge-comparison-value" id="gauge-real-2"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Gráfico 2: Tendência Mensal -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <span class="chart-title">Tendência Mensal (BGT x PM)</span>
+                <div class="grid-column-right">
+                    <!-- Gráfico 2: Tendência Mensal - MODIFICADO -->
+                    <div class="chart-card" id="tendencia-chart-card">
+                        <div class="chart-header">
+                            <span class="chart-title">Tendência Mensal (BGT x PM)</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="barTendenciaChart"></canvas>
+                        </div>
+                        
+                        <!-- Filtros de Ano e Mês - MOVIDOS para dentro deste card -->
+                        <div class="filters-bottom" id="tendencia-filters">
+                            <div class="filter-group">
+                                <label for="yearFilter">Ano</label>
+                                <select id="yearFilter">
+                                    <!-- Years will be populated by JavaScript -->
+                                </select>
+                            </div>
+
+                            <div class="filter-group month-filter-group">
+                                <label>Mês</label>
+                                <div class="month-selector" id="monthSelector">
+                                    <!-- Months will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <canvas id="barTendenciaChart"></canvas>
                 </div>
             </div>
-
-            <!-- Filtros de Ano e Mês -->
-            <div class="filters-bottom">
-                <div class="filter-group">
-                    <label for="yearFilter">Ano</label>
-                    <select id="yearFilter">
-                        <!-- Years will be populated by JavaScript -->
-                    </select>
-                </div>
-
-                <div class="filter-group month-filter-group">
-                    <label>Mês</label>
-                    <div class="month-selector" id="monthSelector">
-                        <!-- Months will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Linha dos velocímetros -->
-            <div class="gauges-row">
-                <div class="gauge-card">
-                    <div class="gauge-title">CATERING</div>
-                    <div class="gauge-container" id="gauge-card-0"></div>
-                    <div class="gauge-comparison">
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">BGT</span>
-                            <span class="gauge-comparison-value" id="gauge-bgt-0"></span>
-                        </div>
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">PM</span>
-                            <span class="gauge-comparison-value" id="gauge-pm-0"></span>
-                        </div>
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">Real</span>
-                            <span class="gauge-comparison-value" id="gauge-real-0"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="gauge-card">
-                    <div class="gauge-title">FRACIONADO</div>
-                    <div class="gauge-container" id="gauge-card-1"></div>
-                    <div class="gauge-comparison">
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">BGT</span>
-                            <span class="gauge-comparison-value" id="gauge-bgt-1"></span>
-                        </div>
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">PM</span>
-                            <span class="gauge-comparison-value" id="gauge-pm-1"></span>
-                        </div>
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">Real</span>
-                            <span class="gauge-comparison-value" id="gauge-real-1"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="gauge-card">
-                    <div class="gauge-title">DEDICADO</div>
-                    <div class="gauge-container" id="gauge-card-2"></div>
-                    <div class="gauge-comparison">
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">BGT</span>
-                            <span class="gauge-comparison-value" id="gauge-bgt-2"></span>
-                        </div>
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">PM</span>
-                            <span class="gauge-comparison-value" id="gauge-pm-2"></span>
-                        </div>
-                        <div class="gauge-comparison-item">
-                            <span class="gauge-comparison-label">Real</span>
-                            <span class="gauge-comparison-value" id="gauge-real-2"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </main>
     </div>
 
