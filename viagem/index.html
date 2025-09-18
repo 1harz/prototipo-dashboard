@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexus | Viagens</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1 class="logo-text">Lexus</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="../dashboard/index.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" class="active"><i class="fas fa-route"></i> Viagens</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Relatórios</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#"><i class="fas fa-question-circle"></i> Ajuda</a></li>
+            </ul>
+            <div class="sidebar-user-info">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Usuario+Logistica&background=3498db&color=fff" alt="Usuário">
+                    <div>
+                        <span>Operador Logístico</span>
+                        <div class="user-status">
+                            <span class="status-dot"></span> Online
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Drag and Drop Overlay -->
+            <div id="dragDropOverlay" class="drag-drop-overlay">
+                <div class="drop-zone">
+                    <i class="fas fa-plus-circle drop-icon"></i>
+                    <p class="drop-text">Arraste e solte para anexar a planilha</p>
+                </div>
+            </div>
+
+            <div class="header">
+                <h2>Gerenciamento de Viagens</h2>
+                <button id="sidebarToggle" class="sidebar-toggle-btn" title="Minimizar Sidebar">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+
+            <div class="actions-bar">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchFilter" placeholder="Pesquisar viagens...">
+                </div>
+                
+                <div class="actions-group">
+                    <div class="dropdown">
+                        <button class="dropdown-btn">
+                            <i class="fas fa-columns"></i>
+                            Colunas
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <div class="dropdown-menu" id="columnSelectorDropdown">
+                            <!-- Checkboxes serão populadas por JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="dropdown-btn">
+                            <i class="fas fa-calendar-alt"></i>
+                            Data
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <div class="dropdown-menu date-dropdown">
+                            <div class="date-input-group">
+                                <label for="startDate">De:</label>
+                                <input type="date" id="startDate">
+                            </div>
+                            <div class="date-input-group">
+                                <label for="endDate">Até:</label>
+                                <input type="date" id="endDate">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="clearFiltersBtn" class="icon-btn" title="Limpar filtros">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <label for="fileUpload" class="primary-btn">
+                        <i class="fas fa-upload"></i>
+                        Anexar
+                    </label>
+                    <input type="file" id="fileUpload" accept=".xlsx, .xls" class="file-input">
+                    
+                    <a href="#" id="downloadTemplateBtn" class="secondary-btn">
+                        <i class="fas fa-download"></i>
+                        Modelo
+                    </a>
+                </div>
+            </div>
+
+            <div class="view-switcher">
+                <button id="tableViewBtn" class="view-btn active" title="Visualizar em Tabela">
+                    <i class="fas fa-table"></i>
+                </button>
+                <button id="cardViewBtn" class="view-btn" title="Visualizar em Cards">
+                    <i class="fas fa-th-large"></i>
+                </button>
+            </div>
+
+            <div id="table-view" class="data-table-container chart-card">
+                <div class="chart-header">
+                    <span class="chart-title">Dados da Viagem</span>
+                </div>
+                <div class="table-responsive">
+                    <table id="travelDataTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <!-- Table headers will be populated by JavaScript -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="card-view" class="card-view-container" style="display: none;">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes da Viagem</h2>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
