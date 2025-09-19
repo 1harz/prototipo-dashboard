@@ -74,10 +74,10 @@ body {
     justify-content: center;
 }
 
-.logo h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #333;
+.logo-img {
+    max-width: 100%; /* Ensure image fits within its container */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 50px; /* Adjust as needed */
 }
 
 .nav-menu {
@@ -426,13 +426,23 @@ body {
 /* Table Styles */
 .data-table-container {
     margin-top: 25px;
+    background-color: var(--primary-color); /* Set background to white */
+    border-radius: var(--border-radius); /* Apply border-radius for consistency */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Add a black drop shadow */
+    padding: 20px; /* Add some padding inside the container */
 }
 
 .table-responsive {
     width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    max-height: calc(100vh - 290px); /* Adjusted height */
+    max-height: calc(100vh - 370px); /* Adjusted height */
+    transition: max-height 0.3s ease; /* Smooth transition for expansion */
+}
+
+.table-responsive.expanded-table {
+    max-height: none; /* Remove max-height to expand fully */
+    overflow-y: visible; /* Allow content to be fully visible */
 }
 
 .data-table {
@@ -463,25 +473,45 @@ body {
     z-index: 1;
 }
 
+.data-table tbody tr {
+    background-color: var(--primary-color); /* Solid white background for rows */
+    color: var(--text-primary); /* Black text for better contrast */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 .data-table tbody tr:hover {
-    background-color: #333; /* Dark gray background on hover */
-    color: white; /* Change text color for better contrast */
+    background-color: #494949; /* Explicit gray background on hover */
+    color: var(--dark-color); /* Keep text black on hover */
 }
 
 /* Row Highlighting Styles */
-.data-table tbody tr {
-    transition: opacity 0.3s ease;
+.data-table tbody tr.highlight {
+    background-color: #333333; /* Darker gray for selected rows */
+    color: var(--dark-color); /* Black text for selected rows */
+    box-shadow: none; /* Remove box-shadow */
 }
 
 .data-table.has-highlight tbody tr:not(.highlight) {
-    opacity: 1; /* Remove opacity change */
-    filter: none; /* Remove blur */
+    opacity: 0.7; /* Slightly dim non-highlighted rows */
+    filter: grayscale(50%); /* Add a subtle grayscale to non-highlighted rows */
 }
 
-.data-table tbody tr.highlight {
-    background-color: #555; /* A slightly lighter dark gray for selected */
-    color: white;
-    box-shadow: none; /* Remove box-shadow */
+.chart-title {
+    font-size: 22px; /* Increased font size */
+    font-weight: 700; /* Made bolder */
+    color: var(--light-color); /* Changed to black for better contrast */
+    text-transform: uppercase; /* Uppercase text */
+    letter-spacing: 0.5px; /* Added slight letter spacing */
+    padding-bottom: 5px; /* Added padding below for a subtle underline effect */
+    border-bottom: 2px solid var(--accent-light); /* Subtle underline */
+    font-family: 'Poppins', sans-serif;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 /* Drag and Drop Overlay */
@@ -639,13 +669,33 @@ body {
     margin-bottom: 2px;
 }
 
-.card-footer {
+.trip-card {
+    position: relative; /* Added for absolute positioning of children */
+    /* Removed padding-top as menu is now inline with title */
+}
+
+.card-title-and-menu {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid var(--glass-border);
+    margin-bottom: 15px; /* Keep consistent spacing */
+}
+
+.card-title-and-menu h3 {
+    margin-bottom: 0; /* Remove bottom margin from title */
+}
+
+.card-menu {
+    position: static; /* Reset position to flow with content */
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 5px; /* Add padding for easier clicking */
 }
 
 .card-menu {
@@ -658,6 +708,23 @@ body {
     font-size: 20px;
     color: var(--text-secondary);
     cursor: pointer;
+    padding: 5px; /* Add padding for easier clicking */
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between; /* Distribute buttons */
+    align-items: center;
+    margin-top: auto; /* Push to the bottom */
+    padding-top: 15px;
+    border-top: 1px solid var(--glass-border);
+    gap: 10px; /* Space between buttons */
+}
+
+.view-details-btn,
+.trip-card .edit-card-btn {
+    flex-grow: 1; /* Allow buttons to grow and fill space */
+    text-align: center;
 }
 
 #context-menu {
@@ -754,6 +821,12 @@ body {
     border-radius: 6px;
     font-weight: 500;
     cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease; /* Add transition for smooth hover */
+}
+
+.view-details-btn:hover {
+    background-color: var(--accent-color); /* Make it blue on hover */
+    color: white;
 }
 
 /* Modal */
@@ -891,6 +964,83 @@ body {
 }
 
 .modal-body .info-item .download-btn:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* Modal Footer for Edit Mode */
+.modal-footer {
+    padding: 15px 25px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: var(--secondary-color);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+.modal-footer .primary-btn,
+.modal-footer .secondary-btn {
+    padding: 10px 20px;
+    font-size: 15px;
+}
+
+/* Modal Input Fields */
+.modal-body .info-item input[type="text"] {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    font-size: 15px;
+    color: var(--text-primary);
+    background-color: var(--secondary-color);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-body .info-item input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.modal-body .info-item input[type="text"][readonly] {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+/* Table Edit Button */
+.data-table .edit-row-btn {
+    padding: 8px 12px; /* Adjust padding for better appearance */
+    font-size: 16px; /* Icon size */
+    color: var(--accent-color);
+    border: 1px solid var(--accent-light);
+    background-color: var(--accent-light);
+    border-radius: 6px;
+}
+
+.data-table .edit-row-btn:hover {
+    background-color: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+/* Card Edit Button */
+.trip-card .edit-card-btn {
+    background-color: var(--accent-light);
+    color: var(--accent-color);
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.trip-card .edit-card-btn:hover {
     background-color: var(--accent-color);
     color: white;
 }

@@ -27,18 +27,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('detailsModal');
     const modalCloseBtn = document.querySelector('.modal .close-btn');
     const modalBody = document.querySelector('.modal-body');
+    const modalHeader = document.querySelector('.modal-header h2'); // Added
+    const modalFooter = document.createElement('div'); // Added
+    modalFooter.className = 'modal-footer'; // Added
+    modal.querySelector('.modal-content').appendChild(modalFooter); // Added
+    const expandTableBtn = document.getElementById('expandTableBtn'); // Added
+    const tableResponsive = document.querySelector('.table-responsive'); // Added
 
     // --- Data Definitions ---
     const columnHeaders = [
-        { key: 'NF', label: 'NF', group: 'Geral' }, { key: 'Tipo', label: 'Tipo', group: 'Geral' }, { key: 'CLIENTE', label: 'Cliente', group: 'Geral' },
-        { key: 'DESTINATÁRIO', label: 'Destinatário', group: 'Geral' }, { key: 'CIDADE', label: 'Cidade', group: 'Rota' }, { key: 'RAIO', label: 'Raio', group: 'Rota' },
-        { key: 'DURAÇÃO DA ROTA', label: 'Duração da Rota', group: 'Rota' }, { key: 'PLACA', label: 'Placa', group: 'Veículo' }, { key: 'FROTA', label: 'Frota', group: 'Veículo' },
-        { key: 'MOTORISTA', label: 'Motorista', group: 'Veículo' }, { key: 'Tipologia', label: 'Tipologia', group: 'Veículo' }, { key: 'CAPACIDADE', label: 'Capacidade', group: 'Carga' },
-        { key: 'PESO BRUTO', label: 'Peso Bruto', group: 'Carga' }, { key: 'Devolução KG', label: 'Devolução KG', group: 'Carga' }, { key: '% Devolução', label: '% Devolução', group: 'Carga' },
-        { key: 'OCUPAÇÃO', label: 'Ocupação', group: 'Carga' }, { key: 'Data Emissão', label: 'Status' }, { key: 'FRETE PESO', label: 'Frete Peso', group: 'Financeiro' },
-        { key: 'Manifesto', label: 'Manifesto', group: 'Geral' }, { key: 'CTE', label: 'CTE', group: 'Geral' }, { key: 'VALOR MERCADORIA', label: 'Valor Mercadoria', group: 'Financeiro' }, { key: 'R$ p/KG', label: 'R$ p/KG', group: 'Financeiro' },
-        { key: 'DROP', label: 'Drop', group: 'Rota' }, { key: 'Lead Time - Cliente', label: 'Lead Time', group: 'Status' }, { key: 'Baixa da Entrega', label: 'Baixa da Entrega', group: 'Status' },
-        { key: 'On time', label: 'On Time', group: 'Status' }, { key: 'DESCARGA', label: 'Descarga', group: 'Carga' }, { key: 'Vlr Agregado', label: 'Vlr Agregado', group: 'Financeiro' }
+        { key: 'NF', label: 'NF', group: 'Geral' },
+        { key: 'CTE', label: 'CTE', group: 'Geral' },
+        { key: 'Manifesto', label: 'Manifesto', group: 'Geral' },
+        { key: 'Tipo', label: 'Tipo', group: 'Geral' },
+        { key: 'CLIENTE', label: 'Cliente', group: 'Geral' },
+        { key: 'DESTINATÁRIO', label: 'Destinatário', group: 'Geral' },
+        { key: 'CIDADE', label: 'Cidade', group: 'Rota' },
+        { key: 'RAIO', label: 'Raio', group: 'Rota' },
+        { key: 'DURAÇÃO DA ROTA', label: 'Duração da Rota', group: 'Rota' },
+        { key: 'PLACA', label: 'Placa', group: 'Veículo' },
+        { key: 'FROTA', label: 'Frota', group: 'Veículo' },
+        { key: 'MOTORISTA', label: 'Motorista', group: 'Veículo' },
+        { key: 'Tipologia', label: 'Tipologia', group: 'Veículo' },
+        { key: 'CAPACIDADE', label: 'Capacidade', group: 'Carga' },
+        { key: 'PESO BRUTO', label: 'Peso Bruto', group: 'Carga' },
+        { key: 'Devolução KG', label: 'Devolução KG', group: 'Carga' },
+        { key: '% Devolução', label: '% Devolução', group: 'Carga' },
+        { key: 'OCUPAÇÃO', label: 'Ocupação', group: 'Carga' },
+        { key: 'Data Emissão', label: 'Status' },
+        { key: 'FRETE PESO', label: 'Frete Peso', group: 'Financeiro' },
+        { key: 'VALOR MERCADORIA', label: 'Valor Mercadoria', group: 'Financeiro' },
+        { key: 'R$ p/KG', label: 'R$ p/KG', group: 'Financeiro' },
+        { key: 'DROP', label: 'Drop', group: 'Rota' },
+        { key: 'Lead Time - Cliente', label: 'Lead Time', group: 'Status' },
+        { key: 'Baixa da Entrega', label: 'Baixa da Entrega', group: 'Status' },
+        { key: 'On time', label: 'On Time', group: 'Status' },
+        { key: 'DESCARGA', label: 'Descarga', group: 'Carga' },
+        { key: 'Vlr Agregado', label: 'Vlr Agregado', group: 'Financeiro' }
     ];
 
     const columnGroups = columnHeaders.reduce((acc, header) => {
@@ -116,6 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
             travelDataTableHead.appendChild(th);
         });
 
+        // Add a header for the edit button column
+        const thEdit = document.createElement('th');
+        thEdit.textContent = 'Ações';
+        travelDataTableHead.appendChild(thEdit);
+
         currentTableData.forEach(rowData => {
             const tr = document.createElement('tr');
             tr.dataset.id = rowData.NF; // Add data-id for linking
@@ -124,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let value = rowData[header.key] !== undefined ? rowData[header.key] : '';
                 
                 if (header.key === 'Data Emissão' || header.key === 'Baixa da Entrega') {
-                    value = value ? formatDateBR(value.split(' ')[0]) : '';
+                    value = value ? formatDateBR(String(value).split(' ')[0]) : '';
                 }
                 if (header.key === 'PESO BRUTO' && typeof value === 'number') {
                     value = Math.round(value);
@@ -137,6 +167,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 tr.appendChild(td);
             });
+
+            // Add Edit button to each row
+            const editTd = document.createElement('td');
+            const editButton = document.createElement('button');
+            editButton.className = 'icon-btn edit-row-btn';
+            editButton.innerHTML = '<i class="fas fa-edit"></i>';
+            editButton.title = 'Editar Linha';
+            editButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent row selection
+                const tripId = parseInt(tr.dataset.id, 10);
+                const tripData = currentTableData.find(d => d.NF === tripId);
+                if (tripData) {
+                    openModal(tripData, null, true); // Open in edit mode
+                }
+            });
+            editTd.appendChild(editButton);
+            tr.appendChild(editTd);
+
             travelDataTableBody.appendChild(tr);
         });
     }
@@ -170,7 +218,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             importantInfo['PESO BRUTO'] = pesoBrutoValue;
 
-            let mainInfoHtml = `<h3>Viagem NF ${data.NF}</h3><div class="info-grid">`;
+            let mainInfoHtml = `
+                <div class="card-title-and-menu">
+                    <h3>Viagem NF ${data.NF}</h3>
+                    <div class="card-menu">
+                        <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                <div class="info-grid">
+            `;
             for (const [key, value] of Object.entries(importantInfo)) {
                 const isDownloadable = ['NF', 'Manifesto', 'CTE'].includes(key) ? 'downloadable-field' : '';
                 mainInfoHtml += `
@@ -185,11 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-main-info">
                     ${mainInfoHtml}
                 </div>
-                <div class="card-footer">
+                <div class="card-actions">
                     <button class="view-details-btn">Ver Detalhes</button>
-                    <div class="card-menu">
-                        <button class="menu-btn"><i class="fas fa-ellipsis-v"></i></button>
-                    </div>
+                    <button class="icon-btn edit-card-btn" title="Editar Card">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
                 </div>
             `;
             cardView.appendChild(card);
@@ -220,50 +276,90 @@ document.addEventListener('DOMContentLoaded', () => {
      * Opens the modal with trip details.
      * @param {object} data The data for the selected trip.
      * @param {string|null} specificField The specific field to show, if any.
+     * @param {boolean} isEditable Whether the modal should open in edit mode.
      */
-    function openModal(data, specificField = null) {
+    function openModal(data, specificField = null, isEditable = false) {
         modalBody.innerHTML = '';
+        modalFooter.innerHTML = ''; // Clear footer content
         document.body.style.overflow = 'hidden'; // Disable body scroll
 
+        modalHeader.textContent = isEditable ? 'Editar Detalhes da Viagem' : 'Detalhes da Viagem';
+
+        let content = '<div class="info-grid">';
         if (specificField) {
-            const header = columnHeaders.find(h => h.key === specificField);
-            const isDownloadable = ['NF', 'Manifesto', 'CTE'].includes(specificField);
-            modalBody.innerHTML = `
-                <div class="info-item">
-                    <strong>${header.label}</strong>
-                    <div class="value-and-button">
-                        <span>${data[specificField] || 'N/A'}</span>
-                        ${isDownloadable ? `<button class="download-btn" data-field="${specificField}" data-value="${data[specificField]}"><i class="fas fa-download"></i> Baixar</button>` : ''}
-                    </div>
-                </div>
-            `;
-        } else {
-            let content = '<div class="info-grid">';
-            columnHeaders.forEach(col => {
+            const col = columnHeaders.find(h => h.key === specificField);
+            if (col) {
+                const value = data[col.key] !== undefined ? data[col.key] : '';
+                const displayValue = (col.key === 'Data Emissão' || col.key === 'Baixa da Entrega') && value ? formatDateBR(String(value).split(' ')[0]) : value;
                 const isDownloadable = ['NF', 'Manifesto', 'CTE'].includes(col.key);
+
                 content += `
                     <div class="info-item">
                         <strong>${col.label}</strong>
                         <div class="value-and-button">
-                            <span>${data[col.key] || 'N/A'}</span>
-                            ${isDownloadable ? `<button class="download-btn" data-field="${col.key}" data-value="${data[col.key]}"><i class="fas fa-download"></i> Baixar</button>` : ''}
+                            <span>${displayValue || 'N/A'}</span>
+                            ${isDownloadable ? `<button class="download-btn" data-field="${col.key}" data-value="${value}"><i class="fas fa-download"></i> Baixar</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            columnHeaders.forEach(col => {
+                const value = data[col.key] !== undefined ? data[col.key] : '';
+                const displayValue = (col.key === 'Data Emissão' || col.key === 'Baixa da Entrega') && value ? formatDateBR(String(value).split(' ')[0]) : value;
+                const isDownloadable = ['NF', 'Manifesto', 'CTE'].includes(col.key);
+
+                content += `
+                    <div class="info-item">
+                        <strong>${col.label}</strong>
+                        <div class="value-and-button">
+                `;
+                if (isEditable) {
+                    // For editing, use input fields
+                    content += `<input type="text" data-key="${col.key}" value="${value}" ${col.key === 'NF' ? 'readonly' : ''}>`; // NF is read-only
+                } else {
+                    // For viewing, use span and download button
+                    content += `<span>${displayValue || 'N/A'}</span>`;
+                    if (isDownloadable) {
+                        content += `<button class="download-btn" data-field="${col.key}" data-value="${value}"><i class="fas fa-download"></i> Baixar</button>`;
+                    }
+                }
+                content += `
                         </div>
                     </div>
                 `;
             });
-            content += '</div>';
-            modalBody.innerHTML = content;
         }
+        content += '</div>';
+        modalBody.innerHTML = content;
+
+        if (isEditable) {
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'primary-btn';
+            saveBtn.textContent = 'Salvar Alterações';
+            saveBtn.addEventListener('click', () => saveChanges(data.NF));
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'secondary-btn';
+            cancelBtn.textContent = 'Cancelar';
+            cancelBtn.addEventListener('click', closeModal);
+
+            modalFooter.appendChild(saveBtn);
+            modalFooter.appendChild(cancelBtn);
+        }
+
         modal.style.display = 'flex'; // Use flex to center the modal
 
-        // Attach download button listeners
-        modalBody.querySelectorAll('.download-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const field = e.currentTarget.dataset.field;
-                const value = e.currentTarget.dataset.value;
-                handleDownload(field, value);
+        // Attach download button listeners (only if not in editable mode)
+        if (!isEditable) {
+            modalBody.querySelectorAll('.download-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const field = e.currentTarget.dataset.field;
+                    const value = e.currentTarget.dataset.value;
+                    handleDownload(field, value);
+                });
             });
-        });
+        }
     }
 
     /**
@@ -275,43 +371,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Renders the table headers and body based on current state.
+     * Saves changes made in the modal to the currentTableData.
+     * @param {number} tripId The NF of the trip being edited.
      */
-    function renderTable() {
-        travelDataTableHead.innerHTML = '';
-        travelDataTableBody.innerHTML = '';
-
-        const visibleColumnHeaders = columnHeaders.filter(h => visibleColumns.includes(h.key));
-
-        visibleColumnHeaders.forEach(header => {
-            const th = document.createElement('th');
-            th.textContent = header.label;
-            travelDataTableHead.appendChild(th);
+    function saveChanges(tripId) {
+        const updatedData = {};
+        modalBody.querySelectorAll('input[data-key]').forEach(input => {
+            updatedData[input.dataset.key] = input.value;
         });
 
-        currentTableData.forEach(rowData => {
-            const tr = document.createElement('tr');
-            tr.dataset.id = rowData.NF; // Add data-id for linking
-            visibleColumnHeaders.forEach(header => {
-                const td = document.createElement('td');
-                let value = rowData[header.key] !== undefined ? rowData[header.key] : '';
-                
-                if (header.key === 'Data Emissão' || header.key === 'Baixa da Entrega') {
-                    value = value ? formatDateBR(value.split(' ')[0]) : '';
-                }
-                if (header.key === 'PESO BRUTO' && typeof value === 'number') {
-                    value = Math.round(value);
-                }
-
-                td.textContent = value;
-                td.dataset.field = header.key; // Add data-field for download functionality
-                if (['NF', 'Manifesto', 'CTE'].includes(header.key)) {
-                    td.classList.add('downloadable-field');
-                }
-                tr.appendChild(td);
-            });
-            travelDataTableBody.appendChild(tr);
-        });
+        const index = currentTableData.findIndex(d => d.NF === tripId);
+        if (index !== -1) {
+            // Update the specific row data
+            currentTableData[index] = { ...currentTableData[index], ...updatedData };
+            // Re-render both views to reflect changes
+            if (tableView.style.display !== 'none') {
+                renderTable();
+            } else {
+                renderCards();
+            }
+            alert('Alterações salvas com sucesso!');
+            closeModal();
+        } else {
+            alert('Erro: Viagem não encontrada para salvar as alterações.');
+        }
     }
 
     /**
@@ -415,6 +498,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
 
+    // Expand table button
+    expandTableBtn.addEventListener('click', () => {
+        tableResponsive.classList.toggle('expanded-table');
+        if (tableResponsive.classList.contains('expanded-table')) {
+            expandTableBtn.innerHTML = '<i class="fas fa-compress-alt"></i> Recolher Planilha';
+        } else {
+            expandTableBtn.innerHTML = '<i class="fas fa-expand-alt"></i> Expandir Planilha';
+        }
+    });
+
     // View switcher
     tableViewBtn.addEventListener('click', () => switchView('table'));
     cardViewBtn.addEventListener('click', () => switchView('card'));
@@ -449,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="menu-divider"></div>
             <div class="menu-item">
                 <button>
-                    <span><i class="fas fa-layer-group"></i>Geral</span>
+                    <span><i class="fas fa-layer-group" style="margin-right: 5px;"></i>Geral</span>
                     <span class="submenu-arrow"><i class="fas fa-chevron-right"></i></span>
                 </button>
                 <div class="submenu">
@@ -458,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="menu-item">
                 <button>
-                    <span><i class="fas fa-route"></i>Rota</span>
+                    <span><i class="fas fa-route" style="margin-right: 5px;"></i>Rota</span>
                     <span class="submenu-arrow"><i class="fas fa-chevron-right"></i></span>
                 </button>
                 <div class="submenu">
@@ -467,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="menu-item">
                 <button>
-                    <span><i class="fas fa-truck"></i>Veículo</span>
+                    <span><i class="fas fa-truck" style="margin-right: 5px;"></i>Veículo</span>
                     <span class="submenu-arrow"><i class="fas fa-chevron-right"></i></span>
                 </button>
                 <div class="submenu">
@@ -476,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="menu-item">
                 <button>
-                    <span><i class="fas fa-box-open"></i>Carga</span>
+                    <span><i class="fas fa-box-open" style="margin-right: 5px;"></i>Carga</span>
                     <span class="submenu-arrow"><i class="fas fa-chevron-right"></i></span>
                 </button>
                 <div class="submenu">
@@ -485,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
              <div class="menu-item">
                 <button>
-                    <span><i class="fas fa-dollar-sign"></i>Financeiro</span>
+                    <span><i class="fas fa-dollar-sign" style="margin-right: 5px;"></i>Financeiro</span>
                     <span class="submenu-arrow"><i class="fas fa-chevron-right"></i></span>
                 </button>
                 <div class="submenu">
@@ -587,7 +680,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!card) return;
 
         // Handle card selection
-        // Handle card selection
         if (event.ctrlKey || event.metaKey) { // Ctrl or Cmd key for multi-selection
             card.classList.toggle('selected');
         } else {
@@ -606,6 +698,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showContextMenu(event, tripData);
         } else if (target.closest('.view-details-btn')) {
             openModal(tripData);
+        } else if (target.closest('.edit-card-btn')) { // Added
+            openModal(tripData, null, true); // Open in edit mode
         } else if (target.classList.contains('downloadable-field')) {
             const field = target.dataset.field;
             const value = tripData[field];
@@ -636,6 +730,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Double-click event listener for table rows
+    travelDataTableBody.addEventListener('dblclick', (event) => { // Added
+        const clickedRow = event.target.closest('tr');
+        if (!clickedRow) return;
+
+        const tripId = parseInt(clickedRow.dataset.id, 10);
+        const tripData = currentTableData.find(d => d.NF === tripId);
+        if (tripData) {
+            openModal(tripData, null, true); // Open in edit mode
+        }
+    });
 
     // Sidebar toggle
     sidebarToggle.addEventListener('click', () => {
