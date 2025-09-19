@@ -256,18 +256,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainContent = document.querySelector('.main-content');
     const icon = sidebarToggleBtn.querySelector('i');
 
-    sidebarToggleBtn.addEventListener('click', function() {
-        const isHidden = sidebar.classList.contains('hidden');
-        if (isHidden) {
-            sidebar.classList.remove('hidden');
-            mainContent.classList.remove('expanded');
-            icon.classList.remove('fa-compress');
-            icon.classList.add('fa-expand');
+    sidebarToggleBtn.addEventListener('click', function(event) {
+        event.stopPropagation();
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('show');
         } else {
-            sidebar.classList.add('hidden');
-            mainContent.classList.add('expanded');
-            icon.classList.remove('fa-expand');
-            icon.classList.add('fa-compress');
+            const isHidden = sidebar.classList.contains('hidden');
+            if (isHidden) {
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('expanded');
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            } else {
+                sidebar.classList.add('hidden');
+                mainContent.classList.add('expanded');
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+            }
+        }
+    });
+
+    mainContent.addEventListener('click', function() {
+        if (window.innerWidth <= 768 && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
         }
     });
 
@@ -394,6 +405,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Sidebar hide/show logic
     // The sidebarRestoreBtn element does not exist in index.html, so this code is removed.
+
+    window.addEventListener('resize', adjustGaugeLayoutForMobile);
+    adjustGaugeLayoutForMobile(); // Initial check
 });
 
 // Helper function to populate select dropdowns (Original)
@@ -778,4 +792,64 @@ function renderNewGauge(index, value) {
 
   gaugeContainer.find(`#arrow-${index}`).css('transform', `rotate(${finalRotation}deg)`);
   gaugeContainer.find(`#counter-${index}`).text(value.toFixed(0));
+}
+
+function adjustGaugeLayoutForMobile() {
+    const multiGaugeCard = document.querySelector('.multi-gauge-card');
+    if (!multiGaugeCard) return;
+
+    const isMobile = window.innerWidth <= 768;
+    const isMobileLayout = multiGaugeCard.classList.contains('mobile-layout');
+
+    if (isMobile && !isMobileLayout) {
+        // Store original HTML
+        if (!multiGaugeCard.dataset.originalHtml) {
+            multiGaugeCard.dataset.originalHtml = multiGaugeCard.innerHTML;
+        }
+
+        let newHtml = '';
+        gaugesData.forEach((gauge, idx) => {
+            newHtml += `
+                <div class="gauge-item-mobile">
+                    <span class="gauge-title">${gauge.titulo}</span>
+                    <div class="gauge-container" id="gauge-card-${idx}">
+                        <div class="wrapper">
+                          <div class="gauge">
+                            <div id="arrow-${idx}" class="needle"></div>
+                            <div class="gauge-center"><div id="counter-${idx}">0</div></div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="gauge-comparison">
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">BGT</span>
+                            <span class="gauge-comparison-value" id="gauge-bgt-${idx}">${gauge.valores.bgt}</span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">PM</span>
+                            <span class="gauge-comparison-value" id="gauge-pm-${idx}">${gauge.valores.pm}</span>
+                        </div>
+                        <div class="gauge-comparison-item">
+                            <span class="gauge-comparison-label">Real</span>
+                            <span class="gauge-comparison-value" id="gauge-real-${idx}">${gauge.valores.real}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        multiGaugeCard.innerHTML = newHtml;
+        multiGaugeCard.classList.add('mobile-layout');
+        // After creating the new structure, we need to re-render the visual part of the gauge (the needle and counter)
+        gaugesData.forEach((gauge, idx) => {
+            renderNewGauge(idx, gauge.valores.real);
+        });
+
+    } else if (!isMobile && isMobileLayout) {
+        if (multiGaugeCard.dataset.originalHtml) {
+            multiGaugeCard.innerHTML = multiGaugeCard.dataset.originalHtml;
+            multiGaugeCard.removeAttribute('data-original-html');
+            multiGaugeCard.classList.remove('mobile-layout');
+            renderGauges(); // Full re-render for desktop
+        }
+    }
 }
